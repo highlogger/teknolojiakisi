@@ -4,6 +4,35 @@ Tüm önemli değişiklikler bu dosyada belgelenmiştir.
 
 ---
 
+## [2026-07-15] — AI Newsroom: Dashboard v1 + Orchestrator v1 + Scout Migration
+
+### TASK-A04: AI Newsroom Dashboard
+- `/admin/newsroom` — Merkezi pipeline kontrol paneli
+- 5 stat kart, job listesi, pipeline viz, durum dağılımı, event stream
+- Job detay modal (tüm adımlar, süre, hata)
+- API: `/api/newsroom/status`, `/api/newsroom/jobs/[id]`
+- Admin sidebar'a "AI Newsroom" linki eklendi
+
+### TASK-A03: AI Newsroom Orchestrator
+- `services/agents/orchestrator/` (7 dosya) — Pipeline beyni
+- PipelineOrchestrator, AgentRunner, StateMachine, EventBus
+- PipelineLogger, PipelineRecovery
+- Scout→Research→Verification→Writer→SEO→Editor→Publisher
+- Retry (exponential backoff), Timeout (120s), Dry Run, Recovery
+
+### TASK-A01: Legacy Bot Removal & Scout Migration
+- `auto-bot.js` + `services/bot/` tamamen silindi (8 dosya, -1846 satır)
+- Scout Agent: RSS → Tech Filter → Queue
+- `scout-entry.js` — Yeni production entry point
+- Docker: bot servisi → scout servisi
+
+### TASK-011/013/014: Topic Hub, Source Intelligence, Author Authority
+- Topic Hub v2: types, config (26 konu), metadata, schema, validator
+- Source Intelligence v2: types, metadata, schema, validator
+- Author Authority: E-E-A-T skoru, expertise analizi
+
+---
+
 ## [2026-07-15] — AI Newsroom: Verification Agent v1
 
 ### Yeni Modül: `services/agents/verification/`
