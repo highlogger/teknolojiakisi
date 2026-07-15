@@ -1,0 +1,112 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-07-15T12:00:00.000Z",
+  "seoScore": 97,
+  "title": "OpenAI GPT-5 modelini resmen duyurdu: İşte tüm özellikleri",
+  "description": "OpenAI, merakla beklenen yeni nesil dil modeli GPT-5'i resmi olarak duyurdu. 2 milyon token bağlam penceresi, gelişmiş muhakeme ve uygun API fiyatlarıyla geliyor...",
+  "slug": "openai-gpt-5-modelini-resmen-duyurdu-iste-tum-ozellikleri",
+  "canonical": "https://teknolojiakisi.com.tr/haber/openai-gpt-5-modelini-resmen-duyurdu-iste-tum-ozellikleri",
+  "robots": "index, follow, max-image-preview:large",
+  "language": "tr",
+  "readingTime": "4 dk",
+  "wordCount": 1230,
+  "primaryKeyword": "GPT-5",
+  "secondaryKeywords": ["OpenAI", "yapay zeka", "LLM", "GPT", "API", "ChatGPT", "derin öğrenme"],
+  "entityKeywords": ["Sam Altman", "OpenAI", "GPT-5", "LLM", "Transformer"],
+  "topicKeywords": ["AI", "LLM", "GPT", "yapay zeka modelleri"],
+  "openGraph": {
+    "ogTitle": "OpenAI GPT-5 modelini resmen duyurdu: İşte tüm özellikleri",
+    "ogDescription": "OpenAI, merakla beklenen yeni nesil dil modeli GPT-5'i resmi olarak duyurdu...",
+    "ogImage": "https://teknolojiakisi.com.tr/og-default.png",
+    "ogType": "article",
+    "ogUrl": "https://teknolojiakisi.com.tr/haber/openai-gpt-5-modelini-resmen-duyurdu-iste-tum-ozellikleri",
+    "ogLocale": "tr_TR",
+    "siteName": "TeknolojiAkışı"
+  },
+  "twitterCard": {
+    "twitterTitle": "OpenAI GPT-5 modelini resmen duyurdu: İşte tüm özellikleri",
+    "twitterDescription": "OpenAI, merakla beklenen yeni nesil dil modeli GPT-5'i resmi olarak duyurdu...",
+    "twitterImage": "https://teknolojiakisi.com.tr/og-default.png",
+    "twitterCard": "summary_large_image"
+  },
+  "schema": {
+    "newsArticle": {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": "OpenAI GPT-5 modelini resmen duyurdu: İşte tüm özellikleri",
+      "url": "https://teknolojiakisi.com.tr/haber/openai-gpt-5-modelini-resmen-duyurdu-iste-tum-ozellikleri",
+      "datePublished": "2026-07-15T12:00:00.000Z",
+      "dateModified": "2026-07-15T12:00:00.000Z",
+      "author": { "@type": "Organization", "name": "TeknolojiAkışı" },
+      "publisher": { "@type": "Organization", "name": "TeknolojiAkışı", "url": "https://teknolojiakisi.com.tr" },
+      "isAccessibleForFree": true,
+      "inLanguage": "tr"
+    },
+    "breadcrumbList": {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Anasayfa", "item": "https://teknolojiakisi.com.tr" },
+        { "@type": "ListItem", "position": 2, "name": "GPT-5", "item": "https://teknolojiakisi.com.tr/topic/gpt-5" },
+        { "@type": "ListItem", "position": 3, "name": "OpenAI GPT-5 modelini resmen duyurdu", "item": "https://teknolojiakisi.com.tr/haber/openai-gpt-5-modelini-resmen-duyurdu-iste-tum-ozellikleri" }
+      ]
+    },
+    "organization": {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "TeknolojiAkışı",
+      "url": "https://teknolojiakisi.com.tr",
+      "logo": "https://teknolojiakisi.com.tr/logo.png"
+    },
+    "website": {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "TeknolojiAkışı",
+      "url": "https://teknolojiakisi.com.tr",
+      "inLanguage": "tr-TR"
+    }
+  },
+  "newsMetadata": {
+    "publicationDate": "2026-07-15T12:00:00.000Z",
+    "modifiedDate": "2026-07-15T12:00:00.000Z",
+    "author": "TeknolojiAkışı Editör",
+    "publisher": "TeknolojiAkışı",
+    "language": "tr",
+    "newsKeywords": ["GPT-5", "OpenAI", "yapay zeka", "LLM", "GPT"]
+  },
+  "discoverMetadata": {
+    "priority": "high",
+    "freshness": "breaking",
+    "topic": "GPT-5",
+    "isBreaking": true,
+    "isEvergreen": true
+  },
+  "breadcrumbs": [
+    { "name": "Anasayfa", "url": "https://teknolojiakisi.com.tr", "position": 1 },
+    { "name": "Gpt-5", "url": "https://teknolojiakisi.com.tr/topic/gpt-5", "position": 2 },
+    { "name": "OpenAI GPT-5 modelini resmen duyurdu", "url": "https://teknolojiakisi.com.tr/haber/openai-gpt-5-modelini-resmen-duyurdu-iste-tum-ozellikleri", "position": 3 }
+  ],
+  "featuredSnippet": "OpenAI, 15 Temmuz 2026'da yeni nesil büyük dil modeli GPT-5'i resmen duyurdu. 10 trilyon parametreyle eğitilen model, 2 milyon token bağlam penceresi ve gelişmiş muhakeme yetenekleriyle geliyor.",
+  "internalLinks": [
+    { "anchorText": "OpenAI", "url": "/topic/openai", "confidence": 85 },
+    { "anchorText": "GPT-5", "url": "/topic/gpt", "confidence": 85 }
+  ],
+  "validation": {
+    "score": 95,
+    "passed": 8,
+    "failed": 0,
+    "warnings": 2,
+    "checks": [
+      { "category": "Title", "name": "Başlık Uzunluğu", "status": "pass", "message": "58 karakter (ideal: 50-70)" },
+      { "category": "Meta", "name": "Meta Description", "status": "pass", "message": "158 karakter (ideal: 140-160)" },
+      { "category": "URL", "name": "Slug", "status": "pass", "message": "SEO uyumlu" },
+      { "category": "Content", "name": "İçerik Uzunluğu", "status": "pass", "message": "4500+ karakter" },
+      { "category": "Technical", "name": "Canonical URL", "status": "pass", "message": "Mevcut" },
+      { "category": "Schema", "name": "JSON-LD", "status": "pass", "message": "4 şema tipi" },
+      { "category": "Social", "name": "Open Graph", "status": "pass", "message": "Mevcut" },
+      { "category": "Social", "name": "Twitter Card", "status": "pass", "message": "summary_large_image" },
+      { "category": "Keywords", "name": "Odak Kelime", "status": "pass", "message": "GPT-5" },
+      { "category": "Image", "name": "Sosyal Medya Görseli", "status": "warn", "message": "Özel görsel önerilir" }
+    ]
+  }
+}

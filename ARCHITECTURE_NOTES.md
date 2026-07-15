@@ -142,3 +142,90 @@ admin/haberler/[id]/workspace/
 
 ### Route: `/admin/haberler/[id]/workspace`
 
+---
+
+## AI Newsroom — Verification Agent v1
+
+```
+services/agents/verification/
+├── index.ts              # Ana servis — verify(research) → verification.json
+├── types.ts              # VerificationResult, ResearchInput, 15+ tip
+├── constants.ts           # Skor ağırlıkları, eşik değerleri, referans listeleri
+├── source-checker.ts      # Kaynak güvenilirliği (resmi/bağımsız/güven skoru)
+├── date-checker.ts        # Tarih doğrulama (güncel/eski/tekrar/saat dilimi)
+├── entity-checker.ts      # Entity doğrulama (şirket/ürün/kişi/model isimleri)
+├── technical-checker.ts   # Teknik doğruluk (API/framework/dil/sürüm/benchmark)
+├── number-checker.ts      # Sayısal veri kontrolü (fiyat/yüzde/kapasite/perf)
+├── link-checker.ts        # URL/link kontrolü (format/domain/erişilebilirlik)
+├── duplicate-checker.ts   # İçerik benzerliği (DB sorgusu, Jaccard skoru)
+├── conflict-analyzer.ts   # Kaynak çelişki analizi (sayısal/sürüm/tarih/timeline)
+└── scorer.ts              # 6 boyutlu skor + VERIFICATION STATUS belirleme
+```
+
+### 8 Kontrol Modülü
+| Modül | Kontrol |
+|-------|---------|
+| **Source Checker** | ≥2 bağımsız kaynak, resmi kaynak, güven skoru ≥40 |
+| **Date Checker** | Güncellik (24/72 saat), eskime (7 gün), tekrar (30 gün), saat dilimi |
+| **Entity Checker** | 27 entity tipi referans karşılaştırması, fuzzy matching |
+| **Technical Checker** | API/framework/dil/OS/donanım referans listeleri |
+| **Number Checker** | Fiyat, yüzde, kapasite, performans — şüpheli değer tespiti |
+| **Link Checker** | URL format, domain güvenilirliği, protokol kontrolü |
+| **Duplicate Checker** | Prisma DB sorgusu, Jaccard benzerlik (%85+ dupe, %60+ uyarı) |
+| **Conflict Analyzer** | Sayısal çelişki (%20+), sürüm/tarih/timeline çelişkisi |
+
+### 6 Karar Durumu
+`VERIFIED` (≥85) → `LIKELY_VERIFIED` (≥70) → `NEEDS_EDITOR_REVIEW` (≥50) → `INSUFFICIENT_EVIDENCE` (≥30) → `CONFLICTING_INFORMATION` → `REJECT` (<30)
+
+### Skor Ağırlıkları
+Source %25 | Fact %20 | Consistency %20 | Entity %15 | Freshness %10 | Technical %10
+
+### Kullanım
+```typescript
+import { verify, execute, dryRun } from "@/services/agents/verification";
+const result = await verify(researchJson);
+// → { status: "VERIFIED", confidence: 96, verificationScore: 94, ... }
+```
+
+### Dökümantasyon
+- `VERIFICATION_AGENT.md` — Tam kullanım kılavuzu
+- `example-verification.json` — Örnek çıktı
+
+---
+
+## AI Newsroom — Writer Agent v1
+
+```
+services/agents/writer/
+├── index.ts              # Ana servis — write(research, verification) → article.md
+├── types.ts              # WriterResult, TitleOption, SectionContent, QualityCheck
+├── prompts.ts            # 6 AI prompt seti (başlık, yazım, kalite, görsel, link)
+├── headline-writer.ts    # 5 başlık üretici (5 stil) + SEO skor + doğrulayıcı
+├── content-writer.ts     # AI ile özgün yazım + verification ön kontrol + fallback
+├── quality-checker.ts    # 8 boyutlu kalite kontrolü (başlık, tekrar, robotik, tarafsızlık)
+├── image-suggester.ts    # 6 görsel tipi önerisi (AI + fallback)
+└── link-suggester.ts     # 30+ topic mapping, entity bazlı iç link adayları
+```
+
+### Haber Yapısı (7 Bölüm)
+Giriş (5N1K) → Ana Gelişme → Teknik Ayrıntılar → Kullanıcı Etkisi → Önceki Durum → Uzman Değerlendirmesi → Sonuç
+
+### Ön Kontrol
+VERIFIED/LIKELY_VERIFIED → yaz | NEEDS_EDITOR_REVIEW → yaz (düşük güven) | INSUFFICIENT_EVIDENCE/CONFLICT/REJECT → engelle
+
+### Kalite Kontrolü (8 Boyut)
+Başlık doğruluğu, tekrar, gereksiz paragraf, Türkçe karakter, robotik ifade, tarafsızlık, kaynaksız iddia, teknik hata
+
+### Kullanım
+```typescript
+import { write } from "@/services/agents/writer";
+const result = await write(researchJson, verificationJson);
+// → { article, titleOptions, excerpt, summary, imageSuggestions, internalLinkCandidates }
+```
+
+### Dökümantasyon
+- `WRITER_AGENT.md` — Tam kullanım kılavuzu
+- `example-article.md` — Örnek makale
+- `example-title-options.json` — Örnek başlık alternatifleri
+- `example-summary.txt` — Örnek özet
+

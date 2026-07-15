@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-07-15T12:00:00.000Z",
+  "status": "SUCCESS",
+  "articleId": "cl_abc123xyz",
+  "publishedAt": "2026-07-15T12:00:01.500Z",
+  "scheduledAt": null,
+  "duration": "1.4s",
+  "workflowState": "published",
+  "checks": {
+    "research": true,
+    "verification": true,
+    "writer": true,
+    "seo": true,
+    "editor": true,
+    "image": true,
+    "entity": true,
+    "topic": true,
+    "source": true
+  },
+  "warnings": [],
+  "errors": [],
+  "events": [
+    "ARTICLE_CREATED: cl_abc123xyz",
+    "BOT_LOG_CREATED",
+    "ARTICLE_PUBLISHED"
+  ]
+}

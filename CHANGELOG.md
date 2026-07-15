@@ -4,6 +4,167 @@ Tüm önemli değişiklikler bu dosyada belgelenmiştir.
 
 ---
 
+## [2026-07-15] — AI Newsroom: Verification Agent v1
+
+### Yeni Modül: `services/agents/verification/`
+
+AI Newsroom pipeline'ının ilk agent'ı. Research Agent çıktısını alır, kapsamlı doğrulama yapar.
+
+#### Özellikler
+- **8 bağımsız kontrol modülü:** Source, Date, Entity, Technical, Number, Link, Duplicate, Conflict
+- **6 karar durumu:** VERIFIED, LIKELY_VERIFIED, NEEDS_EDITOR_REVIEW, INSUFFICIENT_EVIDENCE, CONFLICTING_INFORMATION, REJECT
+- **6 boyutlu skor sistemi:** Source (%25), Fact (%20), Consistency (%20), Entity (%15), Freshness (%10), Technical (%10)
+- **Kaynak güvenilirliği:** Resmi/press/community/social media sınıflandırması, 70+ güvenilir domain
+- **Entity doğrulama:** 100+ bilinen teknik terim (API, framework, dil, OS, donanım, AI model)
+- **Duplicate kontrolü:** Prisma DB sorgusu + Jaccard benzerlik analizi
+- **Çelişki analizi:** Sayısal (%20+), sürüm, tarih, timeline çelişkileri
+- **Agent Interface uyumlu:** `execute()`, `dryRun()` — AI Core Engine ile entegre
+
+#### Dosyalar (12)
+| Dosya | Açıklama |
+|-------|----------|
+| `services/agents/verification/index.ts` | Ana servis — `verify()`, `execute()`, `dryRun()` |
+| `services/agents/verification/types.ts` | 15+ tip tanımı (VerificationResult, ResearchInput, vb.) |
+| `services/agents/verification/constants.ts` | Skor ağırlıkları, eşikler, referans listeleri, güvenilir domain'ler |
+| `services/agents/verification/source-checker.ts` | Kaynak güvenilirliği kontrolü |
+| `services/agents/verification/date-checker.ts` | Tarih doğrulama |
+| `services/agents/verification/entity-checker.ts` | Entity isim doğrulama |
+| `services/agents/verification/technical-checker.ts` | Teknik terim doğrulama |
+| `services/agents/verification/number-checker.ts` | Sayısal veri kontrolü |
+| `services/agents/verification/link-checker.ts` | URL/link kontrolü |
+| `services/agents/verification/duplicate-checker.ts` | İçerik benzerliği kontrolü |
+| `services/agents/verification/conflict-analyzer.ts` | Kaynak çelişki analizi |
+| `services/agents/verification/scorer.ts` | Skor hesaplama + durum belirleme |
+| `services/agents/base/types.ts` | AgentInterface, AgentInput/Output, Pipeline types |
+
+#### Dökümantasyon
+- `VERIFICATION_AGENT.md` — Tam kullanım kılavuzu
+- `ARCHITECTURE_NOTES.md` — Güncellendi (Verification Agent bölümü)
+- `example-verification.json` — Örnek çıktı
+
+#### Mevcut Sisteme Etki
+- ✅ **0 risk** — hiçbir mevcut dosya değiştirilmedi
+- ✅ Yeni `services/agents/` dizini — bağımsız servis katmanı
+- ✅ Mevcut bot çalışmaya devam eder
+
+---
+
+## [2026-07-15] — AI Newsroom: Publisher Agent v1 + Editor-in-Chief Agent v1
+
+### Yeni Modül: `services/agents/publisher/`
+
+Tüm agent çıktılarını doğrular ve güvenli yayın sürecini yönetir.
+
+#### Özellikler
+- **9 pre-flight check:** Research, Verification, Writer, SEO, Editor, Image, Entity, Topic, Source
+- **4 publish modu:** Immediate, Scheduled, Manual Approval, Dry Run
+- **Transaction mantığı:** Prisma create + BotLog, hata durumunda rollback
+- **Slug unique kontrolü:** Otomatik timestamp suffix
+- **Workflow state:** draft → ready_for_publish → publishing → published
+- **Event sistemi:** ARTICLE_CREATED, BOT_LOG_CREATED, ARTICLE_PUBLISHED, ROLLBACK
+- **Revalidation event altyapısı:** Cache + Sitemap event'leri için hazır
+
+### Yeni Modül: `services/agents/editor-in-chief/`
+
+AI Newsroom'un son karar mercisi. 20 editoryal kontrol, 13 boyutlu skor.
+
+#### Özellikler
+- **20 editoryal kontrol:** Haber değeri, özgünlük, başlık, clickbait, keyword stuffing, tarafsızlık, kaynaksız iddia, Türkiye değeri, güncellik...
+- **13 boyutlu skor:** News Value, Originality, Source Quality, Technical Accuracy, Readability, SEO Quality, Discover Potential, Google News Compliance, User Value, Authority, Headline Quality, Opening Quality
+- **4 karar:** APPROVED, MINOR_REVISION, MAJOR_REVISION, REJECTED
+- **5 öncelik:** Breaking, High, Normal, Low, Evergreen
+- **Performans tahmini:** CTR, Google News, Discover, Organik, Evergreen (Düşük/Orta/Yüksek)
+- **Google News / Discover:** PASS / FAIL / WARN değerlendirmesi
+- **Revizyon yönetimi:** section, issue, priority (high/medium/low)
+
+#### Dosyalar
+| Dosya | Açıklama |
+|-------|----------|
+| `services/agents/publisher/index.ts` | Publisher Agent — `publish()`, `execute()`, `dryRun()` |
+| `services/agents/editor-in-chief/index.ts` | Editor-in-Chief Agent — `review()`, `execute()`, `dryRun()` |
+
+#### Dökümantasyon
+- `example-publication-report.json` — Örnek yayın raporu
+- `example-editor-review.json` — Örnek editör kararı
+
+#### Mevcut Sisteme Etki
+- ✅ **0 risk** — yeni servisler, mevcut botu değiştirmez
+- ✅ Content Engine state machine ile uyumlu
+- ✅ Prisma client kullanır (read + write)
+
+---
+
+## [2026-07-15] — AI Newsroom: SEO & Metadata Agent v1
+
+### Yeni Modül: `services/agents/seo/`
+
+Writer Agent çıktısını kullanarak eksiksiz SEO paketi üretir. Mevcut SEO lib, Entity Engine ve GEO Engine ile entegre.
+
+#### Özellikler
+- **SEO temel:** Title, meta description, slug, canonical, keywords (primary/secondary/entity/topic)
+- **Open Graph + Twitter Card:** Tam sosyal medya metadata'sı
+- **JSON-LD Schema (4 tip):** NewsArticle, BreadcrumbList, Organization, WebSite
+- **Google News metadata:** publicationDate, author, publisher, newsKeywords
+- **Google Discover metadata:** priority, freshness, breaking/evergreen
+- **Breadcrumbs:** Otomatik breadcrumb yapısı
+- **Featured Snippet:** 50-60 kelime aday
+- **Internal Links:** Entity bazlı topic mapping
+- **Validation Report:** 10 kontrol noktalı SEO validasyonu
+- **SEO Score:** Validation %60 + Verification Score %40
+
+#### Dosyalar (3)
+| Dosya | Açıklama |
+|-------|----------|
+| `services/agents/seo/index.ts` | Ana servis — `optimizeSEO()`, `execute()`, `dryRun()` |
+| `services/agents/seo/types.ts` | SEOResult, OGMeta, TwitterMeta, NewsMeta, DiscoverMeta |
+| `services/agents/seo/utils.ts` | slugify, stripHtml, countWords, readingTime |
+
+#### Dökümantasyon
+- `example-seo.json` — Örnek tam SEO paketi
+
+---
+
+## [2026-07-15] — AI Newsroom: Writer Agent v1
+
+### Yeni Modül: `services/agents/writer/`
+
+Research + Verification çıktılarını kullanarak tamamen özgün Türkçe teknoloji haberleri yazar.
+
+#### Özellikler
+- **5 alternatif başlık üretici:** direct, question, howto, analysis, news — SEO skorlu
+- **7 bölümlü profesyonel haber yapısı:** Giriş, Ana Gelişme, Teknik Ayrıntılar, Kullanıcı Etkisi, Önceki Durum, Uzman Değerlendirmesi, Sonuç
+- **AI destekli özgün yazım:** AI Core Engine ile, ASLA rewrite değil
+- **Ön kontrol:** Verification status'a göre yazım kararı (REJECT/CONFLICT → engelle)
+- **8 boyutlu kalite kontrolü:** Başlık, tekrar, gereksiz paragraf, robotik ifade, tarafsızlık, kaynaksız iddia, Türkçe karakter
+- **Görsel önerileri:** official_product, benchmark_chart, event_photo, infographic, screenshot, logo
+- **İç link adayları:** Entity bazlı topic mapping, 30+ konu
+- **Clickbait filtresi:** 12 yasaklı kelime, keyword stuffing kontrolü
+- **Agent Interface uyumlu:** `execute()`, `dryRun()`
+
+#### Dosyalar (8)
+| Dosya | Açıklama |
+|-------|----------|
+| `services/agents/writer/index.ts` | Ana servis — `write()`, `execute()`, `dryRun()` |
+| `services/agents/writer/types.ts` | WriterResult, TitleOption, SectionContent, vb. |
+| `services/agents/writer/prompts.ts` | 6 AI prompt seti (başlık, yazım, kalite, görsel, link) |
+| `services/agents/writer/headline-writer.ts` | 5 başlık üretici + seçici + doğrulayıcı |
+| `services/agents/writer/content-writer.ts` | AI ile özgün içerik yazımı + fallback |
+| `services/agents/writer/quality-checker.ts` | 8 boyutlu otomatik kalite kontrolü |
+| `services/agents/writer/image-suggester.ts` | AI + fallback görsel önerileri |
+| `services/agents/writer/link-suggester.ts` | Entity bazlı iç link adayı üretici |
+
+#### Dökümantasyon
+- `WRITER_AGENT.md` — Tam kullanım kılavuzu
+- `example-article.md` — Örnek makale (OpenAI GPT-5 konulu)
+- `example-title-options.json` — Örnek 5 başlık
+- `example-summary.txt` — Örnek özet
+
+#### Mevcut Sisteme Etki
+- ✅ **Düşük risk** — mevcut generator.ts'i değiştirmez, yeni servis
+- ✅ `services/agents/writer/` — bağımsız servis katmanı
+
+---
+
 ## [2026-07-16] — AI Workspace (Editor Dashboard)
 
 ### Yeni Route: `/admin/haberler/[id]/workspace`

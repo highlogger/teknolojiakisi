@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-07-15T12:00:00.000Z",
+  "decision": "APPROVED",
+  "confidence": 96,
+  "editorialScore": 94,
+  "priority": "high",
+  "googleNews": "PASS",
+  "discover": "PASS",
+  "scores": {
+    "newsValue": 95,
+    "originality": 85,
+    "sourceQuality": 90,
+    "technicalAccuracy": 95,
+    "readability": 88,
+    "seoQuality": 92,
+    "discoverPotential": 90,
+    "googleNewsCompliance": 95,
+    "userValue": 90,
+    "authority": 85,
+    "headlineQuality": 85,
+    "openingQuality": 90
+  },
+  "summary": "Haber tüm editoryal kontrollerden geçti, yayınlanabilir.",
+  "warnings": [],
+  "requiredChanges": [],
+  "estimatedPerformance": {
+    "ctr": "Yüksek",
+    "googleNewsPotential": "Yüksek",
+    "discoverPotential": "Yüksek",
+    "organicTrafficPotential": "Yüksek",
+    "evergreenPotential": "Yüksek"
+  }
+}

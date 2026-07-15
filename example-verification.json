@@ -1,0 +1,149 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-07-15T12:00:00.000Z",
+  "status": "VERIFIED",
+  "confidence": 96,
+  "verificationScore": 94,
+  "officialSource": true,
+  "independentSources": 4,
+  "conflicts": [],
+  "warnings": [],
+  "missingInformation": [],
+  "checks": {
+    "sources": true,
+    "dates": true,
+    "entities": true,
+    "technical": true,
+    "numbers": true,
+    "links": true,
+    "duplicates": true,
+    "consistency": true
+  },
+  "scores": {
+    "sourceScore": 92,
+    "factScore": 95,
+    "consistencyScore": 100,
+    "entityScore": 100,
+    "freshnessScore": 100,
+    "technicalScore": 93
+  },
+  "sources": [
+    {
+      "url": "https://openai.com/blog/gpt-5-release",
+      "name": "OpenAI Official Blog",
+      "type": "official",
+      "reliabilityScore": 95,
+      "isAccessible": true,
+      "isOfficial": true,
+      "lastCheckedAt": "2026-07-15T12:00:00.000Z"
+    },
+    {
+      "url": "https://techcrunch.com/2026/07/15/openai-gpt5-launch",
+      "name": "TechCrunch",
+      "type": "press",
+      "reliabilityScore": 75,
+      "isAccessible": true,
+      "isOfficial": false,
+      "lastCheckedAt": "2026-07-15T12:00:00.000Z"
+    },
+    {
+      "url": "https://www.theverge.com/2026/7/15/openai-gpt5",
+      "name": "The Verge",
+      "type": "press",
+      "reliabilityScore": 75,
+      "isAccessible": true,
+      "isOfficial": false,
+      "lastCheckedAt": "2026-07-15T12:00:00.000Z"
+    },
+    {
+      "url": "https://arstechnica.com/ai/2026/07/gpt5-benchmarks",
+      "name": "Ars Technica",
+      "type": "press",
+      "reliabilityScore": 75,
+      "isAccessible": true,
+      "isOfficial": false,
+      "lastCheckedAt": "2026-07-15T12:00:00.000Z"
+    }
+  ],
+  "dateCheck": {
+    "isRecent": true,
+    "isStale": false,
+    "isRehashed": false,
+    "publishedDate": "2026-07-15T10:00:00.000Z",
+    "detectedDate": "2026-07-15T10:00:00.000Z",
+    "hoursSincePublication": 2,
+    "timezoneIssue": false,
+    "details": "Tarih kontrolü geçti. 2 saat önce yayınlanmış."
+  },
+  "entityCheck": {
+    "allEntitiesValid": true,
+    "checkedEntities": [
+      {
+        "name": "OpenAI",
+        "type": "company",
+        "suggestedName": null,
+        "isCorrect": true,
+        "confidence": 95
+      },
+      {
+        "name": "GPT-5",
+        "type": "product",
+        "suggestedName": null,
+        "isCorrect": true,
+        "confidence": 95
+      }
+    ],
+    "corrections": []
+  },
+  "technicalCheck": {
+    "allTechnicalValid": true,
+    "checkedItems": [
+      {
+        "field": "version",
+        "claimed": "GPT-5",
+        "actual": null,
+        "isCorrect": true,
+        "confidence": 85
+      }
+    ],
+    "corrections": []
+  },
+  "numberCheck": {
+    "allNumbersValid": true,
+    "checkedNumbers": [
+      {
+        "field": "price",
+        "claimed": "$20/ay",
+        "expected": null,
+        "isCorrect": true,
+        "confidence": 70
+      }
+    ],
+    "corrections": []
+  },
+  "linkCheck": {
+    "allLinksValid": true,
+    "checkedLinks": [
+      {
+        "url": "https://openai.com/blog/gpt-5-release",
+        "statusCode": null,
+        "isAccessible": true,
+        "isRedirected": false,
+        "redirectUrl": null,
+        "canonicalMismatch": false
+      }
+    ],
+    "brokenLinks": []
+  },
+  "duplicateCheck": {
+    "isDuplicate": false,
+    "similarArticles": [],
+    "isRehashed": false,
+    "details": "Duplicate tespit edilmedi."
+  },
+  "conflictAnalysis": {
+    "hasConflicts": false,
+    "conflicts": []
+  },
+  "failedChecks": []
+}
