@@ -16,19 +16,19 @@
 import type {
   VerificationStatus,
   VerificationScores,
+  DateCheckResult,
+  EntityCheckResult,
+  TechnicalCheckResult,
+  NumberCheckResult,
+  LinkCheckResult,
+  DuplicateCheckResult,
+  ConflictAnalysis,
 } from "./types";
 import {
   VERIFICATION_STATUS,
 } from "./types";
 import { SCORE_WEIGHTS, STATUS_THRESHOLDS } from "./constants";
 import type { SourceCheckResult } from "./source-checker";
-import type { DateCheckResult } from "./date-checker";
-import type { EntityCheckResult } from "./entity-checker";
-import type { TechnicalCheckResult } from "./technical-checker";
-import type { NumberCheckResult } from "./number-checker";
-import type { LinkCheckResult } from "./link-checker";
-import type { DuplicateCheckResult } from "./duplicate-checker";
-import type { ConflictAnalysis } from "./conflict-analyzer";
 
 export interface ScorerInput {
   sourceCheck: SourceCheckResult;
