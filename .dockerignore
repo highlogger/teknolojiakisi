@@ -21,9 +21,8 @@ prisma/dev.db
 *.db-wal
 *.db-shm
 
-# Documentation (sadece DEPLOY.md build'de lazım değil)
+# Documentation
 *.md
-CHANGELOG.md
 
 # Tests & Analysis
 PROJECT_ANALYSIS.md
@@ -31,13 +30,8 @@ BOT_REFACTOR_PLAN.md
 ARCHITECTURE_NOTES.md
 NEXT_TASK_RECOMMENDATION.md
 
-# TypeScript source (derlenmiş hali .next'te)
-src/
+# TypeScript config (source gerekli, sadece config'leri hariç tut)
 auto-bot.ts
-tsconfig.json
-next-env.d.ts
-postcss.config.mjs
-tailwind.config.ts
 
 # Docker
 docker-compose.yml
