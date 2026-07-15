@@ -4,6 +4,7 @@ import { SITE_URL, SITE_NAME } from "@/lib/constants";
 import { JsonLd } from "@/lib/seo";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTopic, getTopicStats } from "@/services/topics";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
@@ -11,7 +12,7 @@ export const revalidate = 3600;
 interface Props { params: { slug: string } }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const topic = await getTopic(params.slug);
+  const topic = getTopic(params.slug);
   if (!topic) return { title: "Konu bulunamadı" };
   return {
     title: `${topic.name} — Haberler, Rehberler, İncelemeler | ${SITE_NAME}`,
@@ -20,25 +21,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-async function getTopic(slug: string) {
-  const topics = [
-    "openai", "chatgpt", "google", "apple", "iphone", "android",
-    "windows", "nvidia", "tesla", "microsoft", "meta", "amazon",
-    "samsung", "intel", "amd", "deepseek", "claude", "gemini",
-    "twitter", "instagram", "tiktok", "youtube", "spotify",
-    "netflix", "discord", "whatsapp", "telegram", "xiaomi",
-    "huawei", "sony", "playstation", "xbox", "nintendo",
-    "spacex", "starlink", "bitcoin", "ethereum", "blockchain",
-  ];
-  if (!topics.includes(slug)) return null;
-  const name = slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, " ");
-  const articles = await prisma.article.count({ where: { status: "published", title: { contains: name } } });
-  return { name, slug, articleCount: articles };
-}
-
 export default async function TopicPage({ params }: Props) {
-  const topic = await getTopic(params.slug);
+  const topic = getTopic(params.slug);
   if (!topic) notFound();
+
+  const stats = await getTopicStats(params.slug);
+  const topicArticleCount = stats?.articleCount || 0;
 
   const articles = await prisma.article.findMany({
     where: { status: "published", title: { contains: topic.name } },
@@ -63,8 +51,20 @@ export default async function TopicPage({ params }: Props) {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{topic.name}</h1>
-        <p className="text-gray-500">Bu konuda {topic.articleCount} içerik bulunuyor.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          {topic.icon} {topic.name}
+        </h1>
+        <p className="text-gray-500">
+          Bu konuda {stats?.articleCount || topicArticleCount} içerik bulunuyor.
+          {stats?.relatedTopics && stats.relatedTopics.length > 0 && (
+            <span className="ml-2">· İlgili: {stats.relatedTopics.slice(0, 3).map(t => t.name).join(", ")}</span>
+          )}
+        </p>
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {topic.keywords.map(k => (
+            <span key={k} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">{k}</span>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -107,9 +107,16 @@ export default async function TopicPage({ params }: Props) {
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <h3 className="text-sm font-bold text-gray-900 mb-3">🏷️ İlgili Konular</h3>
             <div className="flex flex-wrap gap-1.5">
-              {["ai", "yapay-zeka", "teknoloji", "mobil", "yazilim"].map((t) => (
-                <Link key={t} href={`/topics/${t}`} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200 transition-colors">{t}</Link>
-              ))}
+              {stats?.relatedTopics && stats.relatedTopics.length > 0
+                ? stats.relatedTopics.map((rt) => (
+                    <Link key={rt.slug} href={`/topics/${rt.slug}`} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs hover:bg-blue-100 hover:text-blue-600 transition-colors">
+                      {rt.name}
+                    </Link>
+                  ))
+                : ["ai", "yapay-zeka", "teknoloji", "mobil", "yazilim"].map((t) => (
+                    <Link key={t} href={`/topics/${t}`} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200 transition-colors">{t}</Link>
+                  ))
+              }
             </div>
           </div>
         </div>
