@@ -8,7 +8,7 @@
 import { ai } from "@/services/ai/client";
 import type { WriterInput, SectionContent, ArticleSection } from "./types";
 import { ARTICLE_WRITER_SYSTEM, buildArticlePrompt } from "./prompts";
-import { VERIFICATION_STATUS } from "@/services/agents/verification/types";
+const VERIFICATION_STATUS = { VERIFIED: "VERIFIED", LIKELY_VERIFIED: "LIKELY_VERIFIED", NEEDS_EDITOR_REVIEW: "NEEDS_EDITOR_REVIEW", INSUFFICIENT_EVIDENCE: "INSUFFICIENT_EVIDENCE", CONFLICTING_INFORMATION: "CONFLICTING_INFORMATION", REJECT: "REJECT", } as const;
 
 /**
  * Ana yazım fonksiyonu.

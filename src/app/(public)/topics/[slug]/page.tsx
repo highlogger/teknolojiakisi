@@ -4,21 +4,23 @@ import { SITE_URL, SITE_NAME } from "@/lib/constants";
 import { JsonLd } from "@/lib/seo";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getTopic, getTopicStats } from "@/services/topics";
+import { getTopic, getTopicStats, generateTopicMetadata } from "@/services/topics";
+import { generateAllTopicSchemas } from "@/services/topics";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 3600;
+export const revalidate = 3600; // ISR: 1 saat
 
 interface Props { params: { slug: string } }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const topic = getTopic(params.slug);
   if (!topic) return { title: "Konu bulunamadı" };
-  return {
-    title: `${topic.name} — Haberler, Rehberler, İncelemeler | ${SITE_NAME}`,
-    description: `${topic.name} hakkında en güncel haberler, rehberler, incelemeler ve karşılaştırmalar.`,
-    alternates: { canonical: `${SITE_URL}/topics/${params.slug}` },
-  };
+
+  let articleCount = 0;
+  try {
+    articleCount = await prisma.article.count({ where: { status: "published", title: { contains: topic.name } } });
+  } catch {}
+
+  return generateTopicMetadata(topic, articleCount);
 }
 
 export default async function TopicPage({ params }: Props) {
@@ -40,14 +42,15 @@ export default async function TopicPage({ params }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <JsonLd data={{
-        "@context": "https://schema.org", "@type": "CollectionPage",
-        name: `${topic.name} — Haberler & Rehberler`,
-        url: `${SITE_URL}/topics/${topic.slug}`,
-        description: `${topic.name} hakkında en güncel haberler ve rehberler.`,
-        numberOfItems: topic.articleCount,
-        isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
-      }} />
+      <JsonLd data={
+        generateAllTopicSchemas(topic, topicArticleCount, articles.map(a => ({ title: a.title, slug: a.slug, publishedAt: a.publishedAt?.toISOString() || new Date().toISOString() }))).collectionPage
+      } />
+      <JsonLd data={
+        generateAllTopicSchemas(topic, topicArticleCount, []).breadcrumbList
+      } />
+      <JsonLd data={
+        generateAllTopicSchemas(topic, topicArticleCount, []).organization
+      } />
 
       {/* Header */}
       <div className="mb-8">

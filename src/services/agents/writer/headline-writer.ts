@@ -163,11 +163,11 @@ export function validateHeadline(title: string): {
       wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
     }
   }
-  for (const [word, count] of wordCounts) {
+  wordCounts.forEach((count, word) => {
     if (count >= 3) {
       issues.push(`Keyword stuffing: "${word}" ${count} kez geçiyor.`);
     }
-  }
+  });
 
   return {
     valid: issues.length === 0,

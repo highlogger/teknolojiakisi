@@ -4,7 +4,7 @@
  * AI Newsroom yazar agent'ı için tüm tip tanımları.
  */
 
-import type { VerificationStatus } from "@/services/agents/verification/types";
+export type VerificationStatus = "VERIFIED" | "LIKELY_VERIFIED" | "NEEDS_EDITOR_REVIEW" | "INSUFFICIENT_EVIDENCE" | "CONFLICTING_INFORMATION" | "REJECT";
 
 // ─── Writer Input ───────────────────────────────────────────
 
