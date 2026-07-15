@@ -5,42 +5,10 @@
  * Google News uyumluluğu için kaynak profili.
  */
 import prisma from "@/lib/db";
+import type { SourceProfile, SourceScores, SourceStats, SourceRating, SourceIntelligence } from "./types";
 
-// ─── Types ───────────────────────────────────────────────────
-
-export interface SourceProfile {
-  id: string; name: string; url: string; type: string; language: string;
-  isActive: boolean; priority: number; lastFetchedAt: Date | null;
-  category: { name: string; slug: string } | null;
-}
-
-export interface SourceIntelligence {
-  profile: SourceProfile;
-  scores: SourceScores;
-  stats: SourceStats;
-  rating: SourceRating;
-  googleNewsReady: boolean;
-}
-
-export interface SourceScores {
-  reliability: number;   // 0-100: Kaynak ne kadar güvenilir?
-  authority: number;     // 0-100: Otorite/etki skoru
-  freshness: number;     // 0-100: Ne kadar güncel?
-  consistency: number;   // 0-100: Yayın tutarlılığı
-  diversity: number;     // 0-100: Konu çeşitliliği
-  total: number;         // 0-100: Toplam güven skoru
-}
-
-export interface SourceStats {
-  totalArticles: number;
-  publishedArticles: number;
-  avgArticlesPerDay: number;
-  lastPublishedAt: Date | null;
-  topCategories: Array<{ name: string; count: number }>;
-  successRate: number; // Başarılı fetch oranı
-}
-
-export type SourceRating = "AAA" | "AA" | "A" | "B" | "C" | "D" | "F";
+// Re-export types
+export type { SourceProfile, SourceScores, SourceStats, SourceRating, SourceIntelligence } from "./types";
 
 // ─── Main API ────────────────────────────────────────────────
 
@@ -52,34 +20,51 @@ export async function analyzeSource(sourceId: string): Promise<SourceIntelligenc
     });
     if (!source) return null;
 
+    const slug = source.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const now = new Date().toISOString();
+
     const profile: SourceProfile = {
-      id: source.id, name: source.name, url: source.url, type: source.type,
-      language: source.language, isActive: source.isActive, priority: source.priority,
-      lastFetchedAt: source.lastFetchedAt, category: source.category,
+      id: source.id, name: source.name, slug,
+      description: null, website: source.url, rssUrl: source.feedUrl,
+      logo: null, favicon: null, country: "TR", language: source.language,
+      category: source.category?.name || null, verified: source.isActive,
+      active: source.isActive, authorityScore: 0, trustScore: 0, freshnessScore: 0,
+      publishFrequency: 0, overallScore: 0,
+      lastCrawled: source.lastFetchedAt?.toISOString() || null,
+      lastPublished: null, articleCount: 0,
+      createdAt: source.createdAt?.toISOString() || now,
+      updatedAt: source.updatedAt?.toISOString() || now,
     };
 
     const articles = await prisma.article.findMany({
       where: { sourceId: source.id },
-      select: { id: true, status: true, publishedAt: true, categoryId: true, category: { select: { name: true } } },
-      orderBy: { publishedAt: "desc" },
-      take: 100,
+      select: { id: true, status: true, publishedAt: true, category: { select: { name: true, slug: true } } },
+      orderBy: { publishedAt: "desc" }, take: 100,
     });
 
     const published = articles.filter(a => a.status === "published");
     const publishedDates = published.map(a => a.publishedAt).filter(Boolean) as Date[];
 
+    profile.articleCount = articles.length;
+    profile.lastPublished = publishedDates[0]?.toISOString() || null;
+
     const stats: SourceStats = {
-      totalArticles: articles.length,
-      publishedArticles: published.length,
+      totalArticles: articles.length, publishedArticles: published.length,
       avgArticlesPerDay: calculateAvgPerDay(publishedDates),
-      lastPublishedAt: publishedDates[0] || null,
+      lastPublishedAt: publishedDates[0]?.toISOString() || null,
       topCategories: getTopCategories(articles),
+      topTopics: [],
       successRate: source.lastFetchedAt ? 85 : 50,
     };
 
     const scores = calculateScores(source, stats, publishedDates);
-    const rating = getRating(scores.total);
-    const googleNewsReady = scores.total >= 70 && stats.publishedArticles >= 10;
+    profile.authorityScore = scores.authority;
+    profile.trustScore = scores.trust;
+    profile.freshnessScore = scores.freshness;
+    profile.overallScore = scores.overall;
+
+    const rating = getRating(scores.overall);
+    const googleNewsReady = scores.overall >= 70 && stats.publishedArticles >= 10;
 
     return { profile, scores, stats, rating, googleNewsReady };
   } catch { return null; }
@@ -91,9 +76,9 @@ export async function listSources(minScore = 0): Promise<SourceIntelligence[]> {
     const results: SourceIntelligence[] = [];
     for (const s of sources) {
       const intel = await analyzeSource(s.id);
-      if (intel && intel.scores.total >= minScore) results.push(intel);
+      if (intel && intel.scores.overall >= minScore) results.push(intel);
     }
-    return results.sort((a, b) => b.scores.total - a.scores.total);
+    return results.sort((a, b) => b.scores.overall - a.scores.overall);
   } catch { return []; }
 }
 
@@ -103,10 +88,10 @@ function calculateScores(source: { isActive: boolean; priority: number; lastFetc
   const reliability = source.isActive ? Math.min(95, 50 + source.priority * 5) : 30;
   const authority = Math.min(100, source.priority * 10 + (stats.publishedArticles > 50 ? 20 : stats.publishedArticles > 10 ? 10 : 0));
   const freshness = source.lastFetchedAt ? Math.max(0, Math.round(100 - (Date.now() - new Date(source.lastFetchedAt).getTime()) / (86400000 * 3))) : 0;
-  const consistency = dates.length > 0 ? Math.min(100, Math.round(stats.avgArticlesPerDay * 20)) : 50;
-  const diversity = stats.topCategories.length >= 3 ? 85 : stats.topCategories.length >= 2 ? 65 : 40;
-  const total = Math.round((reliability * 0.3 + authority * 0.2 + freshness * 0.2 + consistency * 0.15 + diversity * 0.15));
-  return { reliability, authority, freshness, consistency, diversity, total };
+  const frequency = dates.length > 0 ? Math.min(100, Math.round(stats.avgArticlesPerDay * 20)) : 50;
+  const trust = source.priority >= 8 ? 90 : source.priority >= 5 ? 70 : 50;
+  const overall = Math.round((reliability * 0.25 + authority * 0.2 + freshness * 0.2 + frequency * 0.15 + trust * 0.2));
+  return { authority, trust, freshness, frequency, reliability, overall };
 }
 
 function getRating(score: number): SourceRating {
@@ -121,13 +106,22 @@ function calculateAvgPerDay(dates: Date[]): number {
   return Math.round((dates.length / days) * 100) / 100;
 }
 
-function getTopCategories(articles: Array<{ category: { name: string } | null }>): Array<{ name: string; count: number }> {
-  const counts = new Map<string, number>();
+function getTopCategories(articles: Array<{ category: { name: string; slug: string } | null }>): Array<{ name: string; slug: string; count: number }> {
+  const counts = new Map<string, { name: string; slug: string; count: number }>();
   for (const a of articles) {
-    if (a.category) counts.set(a.category.name, (counts.get(a.category.name) || 0) + 1);
+    if (a.category) {
+      const existing = counts.get(a.category.slug);
+      if (existing) existing.count++;
+      else counts.set(a.category.slug, { name: a.category.name, slug: a.category.slug, count: 1 });
+    }
   }
-  return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) => ({ name, count }));
+  return [...counts.values()].sort((a, b) => b.count - a.count).slice(0, 5);
 }
 
 export const sourceIntelligence = { analyzeSource, listSources };
 export default sourceIntelligence;
+
+// Re-export from sub-modules
+export { validateSource, checkDuplicateSourceSlug, checkBrokenUrl, validateSourceForGoogleNews } from "./validator";
+export { generateSourceMetadata } from "./metadata";
+export { generateAllSourceSchemas, generateSourceOrganization, generateSourceCollectionPage, generateSourceBreadcrumb } from "./schema";

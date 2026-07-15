@@ -4,8 +4,9 @@ import { SITE_URL, SITE_NAME } from "@/lib/constants";
 import { JsonLd } from "@/lib/seo";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { generateSourceMetadata } from "@/services/sources/metadata";
+import { generateAllSourceSchemas } from "@/services/sources/schema";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 interface Props { params: { slug: string } }
@@ -13,11 +14,18 @@ interface Props { params: { slug: string } }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const source = await getSource(params.slug);
   if (!source) return { title: "Kaynak bulunamadı" };
-  return {
-    title: `${source.name} — Haber Kaynağı | ${SITE_NAME}`,
-    description: `${source.name} kaynağından en güncel teknoloji haberleri. Toplam ${source.articleCount} haber.`,
-    alternates: { canonical: `${SITE_URL}/source/${params.slug}` },
-  };
+  return generateSourceMetadata({
+    id: source.id, name: source.name, slug: params.slug,
+    description: null, website: source.url, rssUrl: source.feedUrl,
+    logo: null, favicon: null, country: "TR", language: source.language,
+    category: source.category?.name || null, verified: source.isActive,
+    active: source.isActive, authorityScore: 0, trustScore: 0, freshnessScore: 0,
+    publishFrequency: 0, overallScore: 0,
+    lastCrawled: source.lastFetchedAt?.toISOString() || null,
+    lastPublished: null, articleCount: source.articleCount,
+    createdAt: source.createdAt?.toISOString() || new Date().toISOString(),
+    updatedAt: source.updatedAt?.toISOString() || new Date().toISOString(),
+  });
 }
 
 async function getSource(slug: string) {
@@ -44,7 +52,14 @@ export default async function SourcePage({ params }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: source.name, url: source.url, description: `${source.name} — ${SITE_NAME} haber kaynağı` }} />
+      <JsonLd data={generateAllSourceSchemas(
+        { id: source.id, name: source.name, slug: params.slug, description: null, website: source.url, rssUrl: source.feedUrl, logo: null, favicon: null, country: "TR", language: source.language, category: source.category?.name || null, verified: source.isActive, active: source.isActive, authorityScore: 0, trustScore: 0, freshnessScore: 0, publishFrequency: 0, overallScore: 0, lastCrawled: source.lastFetchedAt?.toISOString() || null, lastPublished: null, articleCount: articles.length, createdAt: source.createdAt?.toISOString() || new Date().toISOString(), updatedAt: source.updatedAt?.toISOString() || new Date().toISOString() },
+        articles.map(a => ({ title: a.title, slug: a.slug }))
+      ).organization} />
+      <JsonLd data={generateAllSourceSchemas(
+        { id: source.id, name: source.name, slug: params.slug, description: null, website: source.url, rssUrl: source.feedUrl, logo: null, favicon: null, country: "TR", language: source.language, category: source.category?.name || null, verified: source.isActive, active: source.isActive, authorityScore: 0, trustScore: 0, freshnessScore: 0, publishFrequency: 0, overallScore: 0, lastCrawled: source.lastFetchedAt?.toISOString() || null, lastPublished: null, articleCount: articles.length, createdAt: source.createdAt?.toISOString() || new Date().toISOString(), updatedAt: source.updatedAt?.toISOString() || new Date().toISOString() },
+        articles.map(a => ({ title: a.title, slug: a.slug }))
+      ).breadcrumb} />
 
       {/* Header */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
