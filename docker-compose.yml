@@ -32,19 +32,18 @@ services:
       retries: 3
       start_period: 15s
 
-  # Haber Botu (aynı image, farklı komut)
-  bot:
+  # Scout Agent — AI Newsroom Entry Point
+  # Her 2 saatte bir calisir: RSS → Tech filter → Duplicate → Queue
+  scout:
     image: teknolojiakisi:latest
-    container_name: teknolojiakisi-bot
+    container_name: teknolojiakisi-scout
     restart: unless-stopped
-    command: ["node", "auto-bot.js"]
+    command: ["node", "scout-entry.js"]
     volumes:
       - app_data:/data
     environment:
       - NODE_ENV=production
       - DATABASE_URL=file:/data/dev.db
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
-      - DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
     networks:
       - app_network
     depends_on:

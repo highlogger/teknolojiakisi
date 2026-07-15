@@ -41,7 +41,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma/schema.prisma ./prisma/
-COPY --from=builder /app/auto-bot.js ./auto-bot.js
+COPY --from=builder /app/scout-entry.js ./scout-entry.js
 
 # Sadece production node_modules (devDependencies yok)
 COPY --from=builder /app/node_modules ./node_modules

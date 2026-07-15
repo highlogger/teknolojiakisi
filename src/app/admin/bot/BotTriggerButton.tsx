@@ -64,7 +64,7 @@ export default function BotTriggerButton() {
             Çalışıyor...
           </>
         ) : (
-          "🤖 Botu Çalıştır"
+          "🔍 Scout Çalıştır"
         )}
       </button>
       {result && (

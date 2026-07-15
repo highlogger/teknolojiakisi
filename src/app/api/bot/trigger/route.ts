@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { runBot } from "@/services/bot/index";
+import { scout } from "@/services/agents/scout";
 import { unauthorizedResponse, errorResponse } from "@/lib/validation";
 import { apiLogger as log } from "@/lib/logger";
 
@@ -9,28 +9,22 @@ export async function POST() {
     const session = await auth();
     if (!session?.user) return unauthorizedResponse();
 
-    // Bot'u asenkron başlat (uzun surebilir)
-    const results = await runBot();
-
-    const totalGenerated = results.reduce((s, r) => s + r.articlesGenerated, 0);
-    const totalPublished = results.reduce((s, r) => s + r.articlesPublished, 0);
-    const errors = results.filter((r) => r.status === "error");
+    const result = await scout();
 
     return NextResponse.json({
       success: true,
-      message: `Bot tamamlandı: ${totalGenerated} haber uretildi, ${totalPublished} yayınlandı`,
+      message: `Scout tamamlandi: ${result.articlesFound} bulundu, ${result.articlesQueued} queue'ya eklendi`,
       data: {
-        totalSources: results.length,
-        totalGenerated,
-        totalPublished,
-        errors: errors.length,
-        results,
+        sourcesChecked: result.sourcesChecked,
+        articlesFound: result.articlesFound,
+        articlesQueued: result.articlesQueued,
+        skipped: result.articlesSkipped,
+        queue: result.queue.slice(0, 10),
+        errors: result.errors,
       },
     });
   } catch (error) {
-    log.error("Bot trigger failed", error as Error);
-    return errorResponse(
-      `Bot calistirma hatası: ${(error as Error).message}`
-    );
+    log.error("Scout trigger failed", error as Error);
+    return errorResponse(`Scout hatasi: ${(error as Error).message}`);
   }
 }
