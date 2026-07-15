@@ -4,6 +4,30 @@ Tüm önemli değişiklikler bu dosyada belgelenmiştir.
 
 ---
 
+## [2026-07-16] — Entity Intelligence Engine v1
+
+### Yeni Modül: `services/entity/`
+
+Merkezi varlık yönetim sistemi — SEO, GEO, Knowledge Graph, Internal Linking için temel.
+
+#### Özellikler
+- **27 entity tipi:** Person, Company, Product, AI Model, Programming Language, Framework, ...
+- **AI Extraction:** `extractEntities()` — AI Core ile JSON mode entity çıkarımı
+- **Entity Resolver:** Exact → Alias → Slug → Fuzzy (Levenshtein) pipeline
+- **Known Aliases:** OpenAI/Open-AI, Meta/Facebook, X/Twitter gibi 20+ alias
+- **Confidence Scoring:** Ağırlıklı skor (confidence, frequency, relevance, authority)
+- **Entity Registry:** In-memory store, type index, bulk registration
+
+#### AI Core Integration
+- `ai.chatJSON()` ile entity çıkarımı
+- JSON mode + type normalization
+- Confidence filtering
+
+#### Dökümantasyon
+- `ARCHITECTURE_NOTES.md` — Güncellendi (Entity Engine bölümü eklendi)
+
+---
+
 ## [2026-07-16] — GitHub Actions CI/CD + Deployment Pipeline v2
 
 ### CI/CD

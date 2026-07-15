@@ -1,4 +1,6 @@
-# ARCHITECTURE_NOTES.md — Content Engine
+# ARCHITECTURE_NOTES.md
+
+## Content Engine
 
 ## Content Lifecycle
 
@@ -46,3 +48,29 @@ services/content/          ← Content Engine
 - `lifecycle.onAiGenerated()` — AI içerik ürettiğinde metadata oluşturur
 - `tags.suggestTagsFromAI()` — AI yanıtından etiket çıkarır
 - `metadata.buildMetadata()` — AI provider/version tracking
+
+---
+
+## Entity Intelligence Engine
+
+```
+services/entity/
+├── types.ts       # 27 entity tipi, extraction, resolution, scoring
+├── config.ts      # Model, confidence thresholds, known aliases
+├── registry.ts    # In-memory entity store + type index
+├── resolver.ts    # Pipeline: exact → alias → slug → fuzzy
+├── extractor.ts   # AI-powered entity extraction (JSON mode)
+├── scoring.ts     # Weighted: confidence 35% + frequency 25% + relevance 25% + authority 15%
+├── service.ts     # Main service: analyzeArticle(), findEntity()
+├── prompts.ts     # NER extraction prompt
+└── index.ts       # Barrel exports
+```
+
+### AI Core Integration
+- `extractor.ts` → `ai.chatJSON()` ile entity çıkarımı
+- JSON mode + type normalization + confidence filtering
+
+### Content Engine Integration
+- `analyzeArticle(title, content)` — makale entity'lerini analiz eder
+- Gelecek: SEO tag'leri, GEO metadata, related articles, internal linking
+
