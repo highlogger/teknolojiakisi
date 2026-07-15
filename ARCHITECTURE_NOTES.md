@@ -112,3 +112,33 @@ const report = analyzeArticleGEO({ content, entityCount: 12 });
 // → { analysis, score, metadata, validation, scoreLevel }
 ```
 
+---
+
+## AI Workspace (Editor Dashboard)
+
+```
+admin/haberler/[id]/workspace/
+├── page.tsx              # Server component — article + categories + authors
+├── EditorWorkspace.tsx   # Tab-based layout (6 panel)
+└── components/
+    ├── ArticleEditor.tsx  # Content editor panel (title, content, meta, sidebar)
+    ├── AiPanel.tsx        # AI analysis (word count, reading time, tokens, source)
+    ├── SeoPanel.tsx       # SEO score + meta title/desc/canonical checks
+    ├── GeoPanel.tsx       # GEO score bars (8 dimension) + content signals
+    ├── EntityPanel.tsx    # Entity categories (person, company, product, ...)
+    ├── PublishPanel.tsx   # Workflow stage + visibility + dates + view count
+    └── ArticleInfo.tsx    # Bottom bar (word count, read time, dates, views)
+```
+
+### Panels (6 tabs)
+| Tab | İçerik |
+|-----|--------|
+| ✏️ Editör | Başlık, içerik, kategori, yazar, etiket, SEO form |
+| 🤖 AI | Word count, reading time, tokens, AI model, source |
+| 🔍 SEO | Meta title/desc/canonical, SEO score bar |
+| 🌐 GEO | 8 boyutlu GEO skor, content sinyalleri |
+| 🏷️ Entity | 9 entity kategorisi + boş durum |
+| 🚀 Yayın | Workflow stage, status, tarihler, view count |
+
+### Route: `/admin/haberler/[id]/workspace`
+

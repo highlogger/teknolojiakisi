@@ -4,6 +4,19 @@ Tüm önemli değişiklikler bu dosyada belgelenmiştir.
 
 ---
 
+## [2026-07-16] — AI Workspace (Editor Dashboard)
+
+### Yeni Route: `/admin/haberler/[id]/workspace`
+- 6 tab'lı editör dashboard (Editör, AI, SEO, GEO, Entity, Yayın)
+- Card tabanlı, responsive, modern tasarım
+- AI Panel: Word count, reading time, tokens, AI model bilgileri
+- SEO Panel: Meta title/desc, canonical, SEO skor bar
+- GEO Panel: 8 boyutlu GEO skor grafikleri
+- Entity Panel: 9 entity kategorisi
+- Publish Panel: Workflow stage, visibility, tarihler
+
+---
+
 ## [2026-07-16] — GEO Intelligence Engine v1
 
 ### Yeni Modül: `services/geo/`
