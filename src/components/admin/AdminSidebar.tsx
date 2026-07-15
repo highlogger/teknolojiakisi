@@ -15,10 +15,11 @@ interface AdminSidebarProps {
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
+  { href: "/admin/newsroom", label: "AI Newsroom", icon: "🤖" },
   { href: "/admin/haberler", label: "Haberler", icon: "📰" },
-  { href: "/admin/bot", label: "Bot Kontrol", icon: "🤖" },
+  { href: "/admin/bot", label: "Scout Kontrol", icon: "🔍" },
   { href: "/admin/bot/kaynaklar", label: "Kaynaklar", icon: "📡" },
-  { href: "/admin/bot/loglar", label: "Bot Logları", icon: "📋" },
+  { href: "/admin/bot/loglar", label: "Scout Logları", icon: "📋" },
   { href: "/admin/yazarlar", label: "Yazarlar", icon: "✍️" },
   { href: "/admin/kategoriler", label: "Kategoriler", icon: "🏷️" },
   { href: "/admin/ayarlar", label: "Ayarlar", icon: "⚙️" },
