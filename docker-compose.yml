@@ -1,7 +1,11 @@
 services:
   # Next.js Uygulamasi
   app:
-    build: .
+    build:
+      context: .
+      args:
+        - AUTH_SECRET=${AUTH_SECRET}
+        - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
     image: teknolojiakisi:latest
     container_name: teknolojiakisi-app
     restart: unless-stopped

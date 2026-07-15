@@ -15,6 +15,13 @@ RUN npm ci
 # Layer 2: Source + Build (cache: source değişince rebuild)
 COPY . .
 RUN npx prisma generate
+
+# Build-time env vars (Next.js build gereksinimi)
+ARG AUTH_SECRET
+ENV AUTH_SECRET=${AUTH_SECRET}
+ARG DEEPSEEK_API_KEY
+ENV DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+
 RUN npx next build
 
 # Layer 3: Production deps (ayrı layer — runner'a sadece prod kopyalanır)
