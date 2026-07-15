@@ -7,6 +7,16 @@ node_modules
 # Database files
 dev.db
 prisma/dev.db
+*.db
+*.db-journal
+
+# Build artifacts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Temp scripts
+local_check.js
+temp/
 
 # Generated
 /src/generated/prisma
