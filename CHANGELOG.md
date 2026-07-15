@@ -4,6 +4,34 @@ Tüm önemli değişiklikler bu dosyada belgelenmiştir.
 
 ---
 
+## [2026-07-16] — GEO Intelligence Engine v1
+
+### Yeni Modül: `services/geo/`
+
+Generative Engine Optimization — AI arama motorları için içerik optimizasyonu.
+
+#### Özellikler
+- **8 platform desteği:** ChatGPT, Google AI, Gemini, Claude, Perplexity, Copilot, Brave, You.com
+- **8 boyutlu GEO skor:** Entity, Authority, Freshness, Citation, Semantic, Answer, Trust, AI Readability
+- **İçerik analizi:** Clarity, entity coverage/density, authority signals, structure, readability
+- **AI Metadata:** Complexity, depth, freshness, authority level, fact density
+- **GEO Validator:** Eşik bazlı kontrol, hata/uyarı/geçti
+- **Citation model:** Kaynak gösterme altyapısı
+- **AI Summary model:** Platform bazlı özet (ChatGPT 300, Claude 500, Brave 150 karakter)
+- **Key Takeaways + Related Questions:** Model hazır
+- **Knowledge Signals:** Entity, fact, statistic, definition, quote, date
+
+#### Kullanım
+```typescript
+import { analyzeArticleGEO } from "@/services/geo";
+const { score, analysis, validation } = analyzeArticleGEO({ content, entityCount: 12 });
+```
+
+#### Dökümantasyon
+- `ARCHITECTURE_NOTES.md` — Güncellendi (GEO Engine bölümü)
+
+---
+
 ## [2026-07-16] — Entity Intelligence Engine v1
 
 ### Yeni Modül: `services/entity/`

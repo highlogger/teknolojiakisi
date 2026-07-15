@@ -74,3 +74,41 @@ services/entity/
 - `analyzeArticle(title, content)` — makale entity'lerini analiz eder
 - Gelecek: SEO tag'leri, GEO metadata, related articles, internal linking
 
+---
+
+## GEO Intelligence Engine
+
+```
+services/geo/
+├── types.ts              # 8 platform, GEO score (8 boyut), analysis, citation, metadata
+├── config.ts             # Platform weights, thresholds, readability config
+├── engine/
+│   └── index.ts          # analyzeArticleGEO() — tek çağrıda tam analiz
+├── analysis/
+│   └── index.ts          # Clarity, entity coverage, authority, structure, readability
+├── scoring/
+│   └── calculator.ts     # Ağırlıklı GEO skor hesaplama (8 boyut)
+├── metadata/
+│   └── generator.ts      # AI metadata: complexity, depth, freshness, authority
+├── validators/
+│   └── geo-validator.ts  # GEO uyumluluk kontrolü
+├── models/
+│   ├── citation.ts       # Kaynak gösterme modeli
+│   ├── summary.ts        # Platform bazlı AI özet modeli
+│   └── takeaways.ts      # Key takeaways + related questions
+└── index.ts              # Barrel exports
+```
+
+### Desteklenen Platformlar (8)
+ChatGPT, Google AI Overview, Gemini, Claude, Perplexity, Microsoft Copilot, Brave Search AI, You.com
+
+### GEO Score Boyutları (8)
+Entity, Authority, Freshness, Citation, Semantic, Answer, Trust, AI Readability
+
+### Kullanım
+```typescript
+import { analyzeArticleGEO } from "@/services/geo";
+const report = analyzeArticleGEO({ content, entityCount: 12 });
+// → { analysis, score, metadata, validation, scoreLevel }
+```
+
