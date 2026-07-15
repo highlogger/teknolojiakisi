@@ -1,0 +1,123 @@
+name: 🚀 Deploy to Production
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⏱  Start timer
+        id: timer
+        run: echo "start=$(date +%s%3N)" >> $GITHUB_OUTPUT
+
+      - name: 🔐 SSH Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || '22' }}
+          script_stop: true
+          script: |
+            set -e
+            cd ${{ secrets.PROJECT_PATH || '/opt/teknolojiakisi' }}
+
+            echo ""
+            echo "═══════════════════════════════════════════"
+            echo "  TeknolojiAkışı CI/CD Deploy"
+            echo "  $(date '+%Y-%m-%d %H:%M:%S')"
+            echo "═══════════════════════════════════════════"
+
+            # ── 1. Git Pull ──────────────────────────────
+            STEP_START=$(date +%s%3N)
+            echo "[1/6] Git pull..."
+            git fetch origin
+            git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+            echo "✅ $(git log -1 --format='%h %s')"
+            echo "GIT_PULL=$(( $(date +%s%3N) - STEP_START ))ms"
+
+            # ── 2. Docker Compose Config ──────────────────
+            STEP_START=$(date +%s%3N)
+            echo "[2/6] Config check..."
+            docker compose config --quiet 2>&1
+            echo "✅ docker-compose.yml valid"
+            echo "CONFIG_CHECK=$(( $(date +%s%3N) - STEP_START ))ms"
+
+            # ── 3. Docker Build ──────────────────────────
+            STEP_START=$(date +%s%3N)
+            echo "[3/6] Docker build..."
+            docker compose build 2>&1 | tail -5
+            echo "✅ Build complete"
+            echo "DOCKER_BUILD=$(( $(date +%s%3N) - STEP_START ))ms"
+
+            # ── 4. Container Start ───────────────────────
+            STEP_START=$(date +%s%3N)
+            echo "[4/6] Container start..."
+            docker compose up -d --remove-orphans 2>&1
+            echo "✅ Containers started"
+            echo "CONTAINER_START=$(( $(date +%s%3N) - STEP_START ))ms"
+
+            # ── 5. Health Check ──────────────────────────
+            STEP_START=$(date +%s%3N)
+            echo "[5/6] Health check (max 60s)..."
+            HEALTHY=false
+            for i in $(seq 1 20); do
+              STATUS=$(docker inspect teknolojiakisi-app --format='{{.State.Health.Status}}' 2>/dev/null || echo "starting")
+              if [ "$STATUS" = "healthy" ]; then
+                HEALTHY=true
+                break
+              fi
+              sleep 3
+            done
+            if [ "$HEALTHY" = true ]; then
+              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost 2>/dev/null || echo "000")
+              if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "301" ] || [ "$HTTP_CODE" = "302" ]; then
+                echo "✅ Health check PASSED (HTTP $HTTP_CODE)"
+              else
+                echo "❌ Health check FAILED — HTTP $HTTP_CODE"
+                echo "HEALTH_CHECK=$(( $(date +%s%3N) - STEP_START ))ms"
+                exit 1
+              fi
+            else
+              echo "❌ Health check FAILED — container unhealthy after 60s"
+              docker logs teknolojiakisi-app --tail 30
+              echo "HEALTH_CHECK=$(( $(date +%s%3N) - STEP_START ))ms"
+              exit 1
+            fi
+            echo "HEALTH_CHECK=$(( $(date +%s%3N) - STEP_START ))ms"
+
+            # ── 6. Cleanup ───────────────────────────────
+            STEP_START=$(date +%s%3N)
+            echo "[6/6] Docker cleanup..."
+            docker image prune -af 2>&1
+            docker container prune -f 2>&1
+            echo "✅ Cleanup complete"
+            echo "CLEANUP=$(( $(date +%s%3N) - STEP_START ))ms"
+
+            # ── Final Status ─────────────────────────────
+            echo ""
+            echo "═══════════════════════════════════════════"
+            echo "  ✅ Deployment SUCCESSFUL!"
+            echo "  🌐 https://teknolojiakisi.com.tr"
+            echo "═══════════════════════════════════════════"
+            docker compose ps
+
+      - name: ⏱  Total time
+        if: always()
+        run: |
+          END=$(date +%s%3N)
+          TOTAL=$(( END - ${{ steps.timer.outputs.start }} ))
+          echo "⏱  Total deployment: ${TOTAL}ms ($(( TOTAL / 1000 ))s)"

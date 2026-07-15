@@ -1,26 +1,52 @@
 {
-  "name": "teknolojiakisi-temp",
+  "name": "teknolojiakisi",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:migrate": "npx prisma migrate dev",
+    "db:push": "npx prisma db push",
+    "db:seed": "npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
+    "db:studio": "npx prisma studio",
+    "db:setup": "npx prisma db push && npm run db:seed",
+    "bot:trigger": "npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/services/bot/trigger.ts",
+    "postinstall": "npx prisma generate"
+  },
+  "prisma": {
+    "seed": "npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.2",
+    "@prisma/client": "^6.19.3",
+    "axios": "^1.18.1",
+    "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
+    "date-fns": "^4.4.0",
+    "dotenv": "^17.4.2",
+    "next": "14.2.35",
+    "next-auth": "^5.0.0-beta.31",
+    "openai": "^6.45.0",
+    "prisma": "^6.19.3",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.35"
+    "rss-parser": "^3.13.0",
+    "slugify": "^1.6.9",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.35"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.0",
+    "typescript": "^5"
   }
 }

@@ -1,0 +1,45 @@
+# TeknolojiAkisi — Robots.txt
+# Tüm arama motorları ve AI botların siteyi taramasına izin ver
+
+User-agent: *
+Allow: /
+
+# Admin paneli tarama
+User-agent: *
+Disallow: /admin/
+
+# Sitemap konumu
+Sitemap: https://teknolojiakisi.com.tr/sitemap.xml
+
+# ——— AI Crawlers ———
+# OpenAI (ChatGPT)
+User-agent: GPTBot
+Allow: /
+
+# Google AI (Gemini, SGE)
+User-agent: Google-Extended
+Allow: /
+
+# Anthropic (Claude)
+User-agent: Claude-User
+Allow: /
+User-agent: Claude-Web
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Meta AI
+User-agent: meta-externalagent
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# Common Crawl (birçok AI bunu kullanır)
+User-agent: CCBot
+Allow: /

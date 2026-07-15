@@ -1,0 +1,28 @@
+# TeknolojiAkisi — Teknoloji Haberleri
+
+Türkiye'nin teknoloji haber platformu. Yapay zeka, mobil, web, yazılım, donanım,
+oyun, bilim, güvenlik ve sosyal medya alanlarında güncel haberler ve analizler.
+
+## Site Haritası
+- Anasayfa: https://teknolojiakisi.com.tr
+- Kategoriler: https://teknolojiakisi.com.tr/kategori/[slug]
+- Haberler: https://teknolojiakisi.com.tr/haber/[slug]
+- Yazarlar: https://teknolojiakisi.com.tr/yazar/[slug]
+- Arama: https://teknolojiakisi.com.tr/arama
+- Hakkımızda: https://teknolojiakisi.com.tr/hakkimizda
+- İletişim: https://teknolojiakisi.com.tr/iletisim
+
+## Kategoriler
+- Yapay Zeka: https://teknolojiakisi.com.tr/kategori/yapay-zeka
+- Mobil: https://teknolojiakisi.com.tr/kategori/mobil
+- Web: https://teknolojiakisi.com.tr/kategori/web
+- Donanım: https://teknolojiakisi.com.tr/kategori/donanim
+- Yazılım: https://teknolojiakisi.com.tr/kategori/yazilim
+- Oyun: https://teknolojiakisi.com.tr/kategori/oyun
+- Bilim: https://teknolojiakisi.com.tr/kategori/bilim
+- Güvenlik: https://teknolojiakisi.com.tr/kategori/guvenlik
+- Sosyal Medya: https://teknolojiakisi.com.tr/kategori/sosyal-medya
+- Otomotiv: https://teknolojiakisi.com.tr/kategori/otomotiv
+
+## Son Haberler
+Tam liste için: https://teknolojiakisi.com.tr/llms-full.txt

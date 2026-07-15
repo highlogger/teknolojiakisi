@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("admin")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  color       String    @default("#3B82F6")
+  sortOrder   Int       @default(0) @map("sort_order")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  articles    Article[]
+  sources     Source[]
+
+  @@map("categories")
+}
+
+model Author {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  avatar    String?
+  bio       String?
+  isBot     Boolean   @default(false) @map("is_bot")
+  specialty String?
+  email     String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  articles  Article[]
+
+  @@map("authors")
+}
+
+model Article {
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  excerpt         String?
+  content         String
+  featuredImage   String?   @map("featured_image")
+  categoryId      String?   @map("category_id")
+  authorId        String?   @map("author_id")
+  sourceId        String?   @map("source_id")
+  originalUrl     String?   @map("original_url")
+  originalTitle   String?   @map("original_title")
+  language        String    @default("tr")
+  status          String    @default("draft")
+  isAiGenerated   Boolean   @default(false) @map("is_ai_generated")
+  aiModel         String?   @map("ai_model")
+  aiPromptTokens  Int?      @map("ai_prompt_tokens")
+  aiCompletionTokens Int?   @map("ai_completion_tokens")
+  metaTitle       String?   @map("meta_title")
+  metaDescription String?   @map("meta_description")
+  isFeatured      Boolean   @default(false) @map("is_featured")
+  publishedAt     DateTime? @map("published_at")
+  viewCount       Int       @default(0) @map("view_count")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  category Category? @relation(fields: [categoryId], references: [id])
+  author   Author?   @relation(fields: [authorId], references: [id])
+  source   Source?   @relation(fields: [sourceId], references: [id])
+  tags     ArticleTag[]
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([slug])
+  @@map("articles")
+}
+
+model Tag {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  slug      String       @unique
+  createdAt DateTime     @default(now()) @map("created_at")
+  articles  ArticleTag[]
+
+  @@map("tags")
+}
+
+model ArticleTag {
+  articleId String @map("article_id")
+  tagId     String @map("tag_id")
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@map("article_tags")
+}
+
+model Source {
+  id               String    @id @default(cuid())
+  name             String
+  url              String
+  type             String    @default("rss")
+  feedUrl          String?   @map("feed_url")
+  language         String    @default("tr")
+  categoryId       String?   @map("category_id")
+  isActive         Boolean   @default(true) @map("is_active")
+  priority         Int       @default(5)
+  fetchIntervalMin Int       @default(180) @map("fetch_interval_min")
+  lastFetchedAt    DateTime? @map("last_fetched_at")
+  selectorTitle    String?   @map("selector_title")
+  selectorContent  String?   @map("selector_content")
+  selectorImage    String?   @map("selector_image")
+  selectorLink     String?   @map("selector_link")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  category Category? @relation(fields: [categoryId], references: [id])
+  articles Article[]
+  botLogs  BotLog[]
+
+  @@map("sources")
+}
+
+model BotLog {
+  id                String   @id @default(cuid())
+  sourceId          String?  @map("source_id")
+  status            String
+  articlesFound     Int      @default(0) @map("articles_found")
+  articlesGenerated Int      @default(0) @map("articles_generated")
+  articlesPublished Int      @default(0) @map("articles_published")
+  errorMessage      String?  @map("error_message")
+  durationMs        Int?     @map("duration_ms")
+  details           String?
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  source Source? @relation(fields: [sourceId], references: [id])
+
+  @@map("bot_logs")
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
